@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/mheers/imagesumdb/config"
 	"github.com/mheers/imagesumdb/image"
@@ -47,7 +48,7 @@ func GetImagesFromFile(path string) (map[string]*image.ImagePersistance, map[str
 	f, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			_, err = createFile(path)
+			_, err = createFileWithDirs(path)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -98,7 +99,16 @@ func (db *DB) Read() error {
 	return nil
 }
 
-func createFile(path string) (*os.File, error) {
+func getDir(path string) string {
+	return path[:strings.LastIndex(path, "/")]
+}
+
+func createFileWithDirs(path string) (*os.File, error) {
+	// create file with dirs
+	err := os.MkdirAll(getDir(path), 0755)
+	if err != nil {
+		return nil, err
+	}
 	f, err := os.Create(path)
 	if err != nil {
 		return nil, err
@@ -107,7 +117,7 @@ func createFile(path string) (*os.File, error) {
 }
 
 func (db *DB) create() (*os.File, error) {
-	return createFile(db.cfg.DBFile)
+	return createFileWithDirs(db.cfg.DBFile)
 }
 
 func (db *DB) Write() error {
