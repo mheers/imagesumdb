@@ -129,6 +129,10 @@ func (db *DB) Write() error {
 		return err
 	}
 
+	if len(result) == 0 {
+		return nil
+	}
+
 	f, err := db.create()
 	if err != nil {
 		return err

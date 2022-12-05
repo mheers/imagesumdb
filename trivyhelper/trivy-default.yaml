@@ -201,7 +201,6 @@ scan:
   sbom-sources: []
   security-checks:
     - vuln
-    - secret
   skip-dirs: []
   skip-files: []
 secret:
