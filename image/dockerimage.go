@@ -71,7 +71,6 @@ func (i *Image) imageCloser() (types.ImageCloser, error) {
 }
 
 // func (i *Image) pull()        {}
-// func (i *Image) vulncheck()   {} // TODO: integrate trivy
 // func (i *Image) writeDigest() {}
 
 func (i *Image) Manifest() (string, error) {

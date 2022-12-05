@@ -10,7 +10,7 @@ import (
 
 type Vulncheck struct {
 	LastChecked time.Time `yaml:"lastchecked"`
-	LastResult  string    `yaml:"lastresult"`
+	Results     []*Vuln   `yaml:"results"`
 	Unknown     int       `yaml:"unknown"`
 	Low         int       `yaml:"low"`
 	Medium      int       `yaml:"medium"`
@@ -18,12 +18,19 @@ type Vulncheck struct {
 	Critical    int       `yaml:"critical"`
 }
 
-func (v *Vulncheck) Safe() bool {
-	return v.Critical == 0 && v.High == 0
+type Vuln struct {
+	CVE     string `yaml:"id"`
+	Title   string `yaml:"title"`
+	PkgName string `yaml:"pkgname"`
 }
 
-func (v *Vulncheck) Total() int {
-	return v.Unknown + v.Low + v.Medium + v.High + v.Critical
+func NewVuln(vuln types.DetectedVulnerability) (v *Vuln) {
+	v = &Vuln{
+		CVE:     vuln.VulnerabilityID,
+		Title:   vuln.Title,
+		PkgName: vuln.PkgName,
+	}
+	return
 }
 
 func NewVulncheck(report *types.Report) (vc *Vulncheck) {
@@ -39,15 +46,31 @@ func NewVulncheck(report *types.Report) (vc *Vulncheck) {
 		return
 	}
 
-	vc.LastResult = report.Results[0].Vulnerabilities[0].VulnerabilityID
+	vc.Results = make([]*Vuln, 0)
 
-	severityCount := countSeverities(report.Results[0].Vulnerabilities)
-	vc.Critical = severityCount["CRITICAL"]
-	vc.High = severityCount["HIGH"]
-	vc.Medium = severityCount["MEDIUM"]
-	vc.Low = severityCount["LOW"]
-	vc.Unknown = severityCount["UNKNOWN"]
+	for _, result := range report.Results {
+		for _, vuln := range result.Vulnerabilities {
+			vc.Results = append(vc.Results, NewVuln(vuln))
+		}
+	}
+
+	for _, result := range report.Results {
+		severityCount := countSeverities(result.Vulnerabilities)
+		vc.Critical += severityCount["CRITICAL"]
+		vc.High += severityCount["HIGH"]
+		vc.Medium += severityCount["MEDIUM"]
+		vc.Low += severityCount["LOW"]
+		vc.Unknown += severityCount["UNKNOWN"]
+	}
 	return
+}
+
+func (v *Vulncheck) Safe() bool {
+	return v.Critical == 0 && v.High == 0
+}
+
+func (v *Vulncheck) Total() int {
+	return v.Unknown + v.Low + v.Medium + v.High + v.Critical
 }
 
 func (i *Image) Scan() (*types.Report, error) {
