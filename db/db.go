@@ -89,6 +89,16 @@ func (db *DB) ReadImagePersistance() error {
 	return nil
 }
 
+func (db *DB) ImagePersistance() (map[string]*image.ImagePersistance, error) {
+	if db.imagePersistance == nil {
+		err := db.ReadImagePersistance()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return db.imagePersistance, nil
+}
+
 func (db *DB) Read() error {
 	_, images, err := GetImagesFromFile(db.cfg.DBFile)
 	if err != nil {
