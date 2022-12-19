@@ -110,7 +110,11 @@ func (db *DB) Read() error {
 }
 
 func getDir(path string) string {
-	return path[:strings.LastIndex(path, "/")]
+	index := strings.LastIndex(path, "/")
+	if index == -1 {
+		return "./"
+	}
+	return path[:index]
 }
 
 func createFileWithDirs(path string) (*os.File, error) {
