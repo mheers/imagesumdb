@@ -2,11 +2,12 @@ package image
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
-	"github.com/containers/image/docker"
-	"github.com/containers/image/types"
+	"github.com/containers/image/v5/docker"
+	"github.com/containers/image/v5/types"
 	"github.com/mheers/imagesumdb/config"
 )
 
@@ -95,8 +96,26 @@ func (i *Image) Digest() (string, error) {
 	}
 	defer img.Close()
 
-	digest := img.ConfigInfo().Digest
-	return digest.String(), nil
+	manifestS, err := i.Manifest()
+	if err != nil {
+		return "", err
+	}
+
+	type manifest struct {
+		Manifests []struct {
+			Digest string `json:"digest"`
+		} `json:"manifests"`
+	}
+
+	var m manifest
+	err = json.Unmarshal([]byte(manifestS), &m)
+	if err != nil {
+		return "", err
+	}
+
+	digest := m.Manifests[0].Digest
+
+	return digest, nil
 }
 
 func imageRegistryRewrite(cfg *config.Config, src string) string {
