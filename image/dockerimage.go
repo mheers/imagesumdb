@@ -53,7 +53,7 @@ func (i *Image) Tag() string {
 		if err != nil {
 			panic(err)
 		}
-		return digest
+		return fmt.Sprintf("%s@%s", i.tag, digest)
 	}
 	return i.tag
 }
