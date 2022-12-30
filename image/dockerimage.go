@@ -102,6 +102,18 @@ func (i *Image) Digest() (string, error) {
 	}
 
 	type manifest struct {
+		SchemaVersion int    `json:"schemaVersion"`
+		MediaType     string `json:"mediaType"`
+		Config        struct {
+			MediaType string `json:"mediaType"`
+			Size      int    `json:"size"`
+			Digest    string `json:"digest"`
+		} `json:"config"`
+		Layers []struct {
+			MediaType string `json:"mediaType"`
+			Size      int    `json:"size"`
+			Digest    string `json:"digest"`
+		} `json:"layers"`
 		Manifests []struct {
 			Digest string `json:"digest"`
 		} `json:"manifests"`
@@ -113,7 +125,12 @@ func (i *Image) Digest() (string, error) {
 		return "", err
 	}
 
-	digest := m.Manifests[0].Digest
+	var digest string
+	if len(m.Manifests) == 0 {
+		digest = m.Config.Digest
+	} else {
+		digest = m.Manifests[0].Digest
+	}
 
 	return digest, nil
 }
