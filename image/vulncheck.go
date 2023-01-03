@@ -19,16 +19,18 @@ type Vulncheck struct {
 }
 
 type Vuln struct {
-	CVE     string `yaml:"id"`
-	Title   string `yaml:"title"`
-	PkgName string `yaml:"pkgname"`
+	CVE      string `yaml:"id"`
+	Title    string `yaml:"title"`
+	PkgName  string `yaml:"pkgname"`
+	Severity string `yaml:"severity"`
 }
 
 func NewVuln(vuln types.DetectedVulnerability) (v *Vuln) {
 	v = &Vuln{
-		CVE:     vuln.VulnerabilityID,
-		Title:   vuln.Title,
-		PkgName: vuln.PkgName,
+		CVE:      vuln.VulnerabilityID,
+		Title:    vuln.Title,
+		PkgName:  vuln.PkgName,
+		Severity: vuln.Severity,
 	}
 	return
 }
