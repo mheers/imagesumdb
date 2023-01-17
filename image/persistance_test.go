@@ -7,7 +7,7 @@ import (
 )
 
 func TestToPersistance(t *testing.T) {
-	image := NewImage(nil, "docker.io/alpine", "3.12")
+	image := NewImage(nil, "docker.io", "alpine", "3.12")
 	report, err := image.Scan()
 	require.NoError(t, err)
 	require.NotNil(t, report)

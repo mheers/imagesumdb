@@ -81,7 +81,7 @@ func (i *Image) Scan() (*types.Report, error) {
 		return nil, err
 	}
 
-	report, err := trivyhelper.ScanImage(context.Background(), i.RepoTag())
+	report, err := trivyhelper.ScanImage(context.Background(), i.RegistryRepositoryTagPlain())
 	if err != nil {
 		return nil, err
 	}

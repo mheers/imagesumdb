@@ -2,3 +2,4 @@ db.yaml
 __debug_bin
 .cache
 fanal
+cover.out

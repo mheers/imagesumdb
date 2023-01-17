@@ -22,12 +22,12 @@ func main() {
 		panic(err)
 	}
 
-	err = dbInstance.Set("test", image.NewImage(&cfg, "alpine", "3.11"))
+	err = dbInstance.Set("test", image.NewImage(&cfg, "", "alpine", "3.11"))
 	if err != nil {
 		panic(err)
 	}
 
-	err = dbInstance.Set("newer", image.NewImage(&cfg, "alpine", "3.16"))
+	err = dbInstance.Set("newer", image.NewImage(&cfg, "", "alpine", "3.16"))
 	if err != nil {
 		panic(err)
 	}

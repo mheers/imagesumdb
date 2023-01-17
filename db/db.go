@@ -29,12 +29,12 @@ func (db *DB) Get(name string) (*image.Image, error) {
 	return db.images[name], nil
 }
 
-func (db *DB) Add(name string, repository, tag string) error {
+func (db *DB) Add(name, registry, repository, tag string) error {
 	// set image in db.Images
 	if db.images[name] != nil {
 		return fmt.Errorf("image for %s already exists", name)
 	}
-	db.images[name] = image.NewImage(db.cfg, repository, tag)
+	db.images[name] = image.NewImage(db.cfg, registry, repository, tag)
 	return nil
 }
 
@@ -183,14 +183,14 @@ func (db *DB) CompareImages(new map[string]*image.Image) error {
 	// check if hashes have changed
 	for name, img := range new {
 		if old[name] == nil {
-			fmt.Printf("new image found for %s: %s\n", name, img.RepoTag())
+			fmt.Printf("new image found for %s: %s\n", name, img.RegistryRepositoryTag())
 		} else {
 			newDigest, err := img.Digest()
 			if err != nil {
 				return err
 			}
 			if old[name].Digest != newDigest {
-				fmt.Printf("image changed for %s: %s\n", name, img.RepoTag())
+				fmt.Printf("image changed for %s: %s\n", name, img.RegistryRepositoryTag())
 			}
 		}
 	}

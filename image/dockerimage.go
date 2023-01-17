@@ -12,7 +12,9 @@ import (
 )
 
 type Image struct {
-	// registry with repository of the image
+	// registry of the image
+	registry string
+	// repository of the image (=name)
 	repository string
 	// tag of the image
 	tag string
@@ -21,27 +23,69 @@ type Image struct {
 	vulncheck *Vulncheck
 }
 
-func NewImage(cfg *config.Config, repository, tag string) *Image {
+func NewImage(cfg *config.Config, registry, repository, tag string) *Image {
 	return &Image{
+		registry:   registry,
 		repository: repository,
 		tag:        tag,
 		cfg:        cfg,
 	}
 }
 
-func (i *Image) RepoTag() string {
-	return i.repository + ":" + i.tag
+func (i *Image) RegistryRepositoryPlain() string {
+	r := i.registry
+	if r != "" {
+		r += "/"
+	}
+	return fmt.Sprintf("%s%s", r, i.repository)
+}
+
+func (i *Image) RegistryRepository() string {
+	r := i.Registry()
+	if r != "" {
+		r += "/"
+	}
+	return fmt.Sprintf("%s%s", r, i.Repository())
+}
+
+func (i *Image) RegistryRepositoryTagPlain() string {
+	return fmt.Sprintf("%s:%s", i.RegistryRepositoryPlain(), i.tag)
+}
+
+func (i *Image) RegistryRepositoryTag() string {
+	return fmt.Sprintf("%s:%s", i.RegistryRepository(), i.Tag())
+}
+
+func (i *Image) RegistryRepositoryTagDigestPlain() string {
+	return fmt.Sprintf("%s:%s@%s", i.RegistryRepositoryPlain(), i.TagPlain(), i.MustDigest())
+}
+
+func (i *Image) RegistryRepositoryTagDigest() string {
+	return fmt.Sprintf("%s:%s@%s", i.RegistryRepository(), i.TagPlain(), i.MustDigest())
+}
+
+func (i *Image) StringPlain() string {
+	return i.RegistryRepositoryTagPlain()
 }
 
 func (i *Image) String() string {
-	return i.Repository() + ":" + i.Tag()
+	return i.RegistryRepositoryTag()
+}
+
+func (i *Image) RegistryPlain() string {
+	return i.registry
+}
+
+func (i *Image) Registry() string {
+	return imageRegistryRewrite(i.cfg, i.RegistryPlain())
 }
 
 func (i *Image) Repository() string {
-	if i.cfg == nil {
-		return i.repository
-	}
-	return imageRegistryRewrite(i.cfg, i.repository)
+	return i.repository
+}
+
+func (i *Image) TagPlain() string {
+	return i.tag
 }
 
 func (i *Image) Tag() string {
@@ -49,17 +93,14 @@ func (i *Image) Tag() string {
 		return i.tag
 	}
 	if i.cfg.ForceDigest {
-		digest, err := i.Digest()
-		if err != nil {
-			panic(err)
-		}
+		digest := i.MustDigest()
 		return fmt.Sprintf("%s@%s", i.tag, digest)
 	}
 	return i.tag
 }
 
 func (i *Image) imageCloser() (types.ImageCloser, error) {
-	ref, err := docker.ParseReference(fmt.Sprintf("//%s", i.RepoTag()))
+	ref, err := docker.ParseReference(fmt.Sprintf("//%s", i.RegistryRepositoryTagPlain()))
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +128,14 @@ func (i *Image) Manifest() (string, error) {
 		return "", err
 	}
 	return string(b), nil
+}
+
+func (i *Image) MustDigest() string {
+	digest, err := i.Digest()
+	if err != nil {
+		panic(err)
+	}
+	return digest
 }
 
 func (i *Image) Digest() (string, error) {
