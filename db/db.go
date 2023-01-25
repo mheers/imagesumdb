@@ -38,6 +38,14 @@ func (db *DB) Add(name, registry, repository, tag string) error {
 	return nil
 }
 
+func (db *DB) Import(db2 *DB) error {
+	// import db2.Images to db.Images
+	for name, img := range db2.images {
+		db.images[name] = img
+	}
+	return nil
+}
+
 func (db *DB) Set(name string, img *image.Image) error {
 	// set image in db.Images
 	db.images[name] = img
