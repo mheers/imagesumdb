@@ -18,6 +18,8 @@ type Image struct {
 	repository string
 	// tag of the image
 	tag string
+	// wheather the image is a usual image or a general oci artifact
+	oci bool
 	// cfg is the config
 	cfg       *config.Config
 	vulncheck *Vulncheck
@@ -29,6 +31,17 @@ func NewImage(cfg *config.Config, registry, repository, tag string) *Image {
 		repository: repository,
 		tag:        tag,
 		cfg:        cfg,
+		oci:        false,
+	}
+}
+
+func NewOCIImage(cfg *config.Config, registry, repository, tag string) *Image {
+	return &Image{
+		registry:   registry,
+		repository: repository,
+		tag:        tag,
+		cfg:        cfg,
+		oci:        true,
 	}
 }
 
@@ -182,6 +195,10 @@ func (i *Image) Digest() (string, error) {
 	}
 
 	return digest, nil
+}
+
+func (i *Image) IsOCI() bool {
+	return i.oci
 }
 
 func imageRegistryRewrite(cfg *config.Config, src string) string {

@@ -29,12 +29,20 @@ func (db *DB) Get(name string) (*image.Image, error) {
 	return db.images[name], nil
 }
 
+func (db *DB) AddOCI(name, registry, repository, tag string) error {
+	return db.add(name, image.NewOCIImage(db.cfg, registry, repository, tag))
+}
+
 func (db *DB) Add(name, registry, repository, tag string) error {
+	return db.add(name, image.NewImage(db.cfg, registry, repository, tag))
+}
+
+func (db *DB) add(name string, img *image.Image) error {
 	// set image in db.Images
 	if db.images[name] != nil {
 		return fmt.Errorf("image for %s already exists", name)
 	}
-	db.images[name] = image.NewImage(db.cfg, registry, repository, tag)
+	db.images[name] = img
 	return nil
 }
 
@@ -174,6 +182,9 @@ func (db *DB) Write() error {
 func (db *DB) Vulncheck() error {
 	// run vulncheck on all images in db.Images
 	for _, img := range db.images {
+		if img.IsOCI() {
+			continue
+		}
 		_, err := img.Scan()
 		if err != nil {
 			return err
