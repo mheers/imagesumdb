@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/mheers/imagesumdb/config"
+	"github.com/mheers/imagesumdb/helpers"
 	"github.com/mheers/imagesumdb/image"
 	"gopkg.in/yaml.v3"
 )
@@ -27,6 +28,10 @@ func NewDB(cfg *config.Config) *DB {
 func (db *DB) Get(name string) (*image.Image, error) {
 	// get image from db.Images
 	return db.images[name], nil
+}
+
+func (db *DB) GetAll() map[string]*image.Image {
+	return db.images
 }
 
 func (db *DB) AddOCI(name, registry, repository, tag string) error {
@@ -180,17 +185,7 @@ func (db *DB) Write() error {
 }
 
 func (db *DB) Vulncheck() error {
-	// run vulncheck on all images in db.Images
-	for _, img := range db.images {
-		if img.IsOCI() {
-			continue
-		}
-		_, err := img.Scan()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return helpers.Run("imagesumdb", "check", "-d", db.cfg.DBFile)
 }
 
 func (db *DB) CompareSetImagesWithPersistance() error {

@@ -45,6 +45,10 @@ func NewOCIImage(cfg *config.Config, registry, repository, tag string) *Image {
 	}
 }
 
+func (i *Image) SetVulncheck(vulncheck *Vulncheck) {
+	i.vulncheck = vulncheck
+}
+
 func (i *Image) RegistryRepositoryPlain() string {
 	r := i.registry
 	if r != "" {

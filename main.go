@@ -37,11 +37,6 @@ func main() {
 		panic(err)
 	}
 
-	err = dbInstance.Vulncheck()
-	if err != nil {
-		panic(err)
-	}
-
 	err = dbInstance.Write()
 	if err != nil {
 		panic(err)

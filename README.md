@@ -4,6 +4,12 @@
 
 ImageSumDB provides a flexible database as a dependency for projects that deploy dockerimages. It is a simple database that stores the name of the image and the sum of the image. The sum is calculated by the sha256sum of the image. The database is stored in a file called `db.yaml` in the current working directory.
 
+## Installation
+
+```bash
+go install github.com/mheers/imagesumdb/cmd@latest
+```
+
 ## Features
 - Add images to the database
 - Calculate the sum of the image

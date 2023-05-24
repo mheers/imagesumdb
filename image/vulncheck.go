@@ -1,11 +1,9 @@
 package image
 
 import (
-	"context"
 	"time"
 
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/mheers/imagesumdb/trivyhelper"
 )
 
 type Vulncheck struct {
@@ -73,21 +71,6 @@ func (v *Vulncheck) Safe() bool {
 
 func (v *Vulncheck) Total() int {
 	return v.Unknown + v.Low + v.Medium + v.High + v.Critical
-}
-
-func (i *Image) Scan() (*types.Report, error) {
-	err := trivyhelper.InitTrivyHelper()
-	if err != nil {
-		return nil, err
-	}
-
-	report, err := trivyhelper.ScanImage(context.Background(), i.RegistryRepositoryTagPlain())
-	if err != nil {
-		return nil, err
-	}
-
-	i.vulncheck = NewVulncheck(report)
-	return report, nil
 }
 
 func (i *Image) Safe() bool {
