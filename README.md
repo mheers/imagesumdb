@@ -51,3 +51,7 @@ if err != nil {
     panic(err)
 }
 ```
+
+# Alternatives
+
+- https://github.com/safe-waters/docker-lock
