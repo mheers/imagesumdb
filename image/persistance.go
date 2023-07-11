@@ -17,21 +17,21 @@ func (i *Image) ToPersistance(name string) (*ImagePersistance, error) {
 	}
 	return &ImagePersistance{
 		Name:       name,
-		Registry:   i.registry,
-		Repository: i.repository,
-		Tag:        i.tag,
-		OCI:        i.oci,
+		Registry:   i.I_registry,
+		Repository: i.I_repository,
+		Tag:        i.I_tag,
+		OCI:        i.I_oci,
 		Digest:     digest,
-		Vulncheck:  i.vulncheck,
+		Vulncheck:  i.I_vulncheck,
 	}, nil
 }
 
 func (i *ImagePersistance) ToImage() *Image {
 	return &Image{
-		registry:   i.Registry,
-		repository: i.Repository,
-		tag:        i.Tag,
-		oci:        i.OCI,
-		vulncheck:  i.Vulncheck,
+		I_registry:   i.Registry,
+		I_repository: i.Repository,
+		I_tag:        i.Tag,
+		I_oci:        i.OCI,
+		I_vulncheck:  i.Vulncheck,
 	}
 }

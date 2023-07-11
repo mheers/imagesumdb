@@ -6,62 +6,62 @@ import (
 	"strings"
 
 	"github.com/mheers/imagesumdb/config"
-	"github.com/mheers/imagesumdb/helpers"
 	"github.com/mheers/imagesumdb/image"
+	"github.com/mheers/imagesumdb/pluginregistry"
 	"gopkg.in/yaml.v3"
 )
 
 type DB struct {
-	// cfg is the config
-	cfg              *config.Config
-	images           map[string]*image.Image
+	// Cfg is the config
+	Cfg              *config.Config
+	Images           map[string]*image.Image
 	imagePersistance map[string]*image.ImagePersistance
 }
 
 func NewDB(cfg *config.Config) *DB {
 	return &DB{
-		cfg:    cfg,
-		images: make(map[string]*image.Image),
+		Cfg:    cfg,
+		Images: make(map[string]*image.Image),
 	}
 }
 
 func (db *DB) Get(name string) (*image.Image, error) {
 	// get image from db.Images
-	return db.images[name], nil
+	return db.Images[name], nil
 }
 
 func (db *DB) GetAll() map[string]*image.Image {
-	return db.images
+	return db.Images
 }
 
 func (db *DB) AddOCI(name, registry, repository, tag string) error {
-	return db.add(name, image.NewOCIImage(db.cfg, registry, repository, tag))
+	return db.add(name, image.NewOCIImage(db.Cfg, registry, repository, tag))
 }
 
 func (db *DB) Add(name, registry, repository, tag string) error {
-	return db.add(name, image.NewImage(db.cfg, registry, repository, tag))
+	return db.add(name, image.NewImage(db.Cfg, registry, repository, tag))
 }
 
 func (db *DB) add(name string, img *image.Image) error {
 	// set image in db.Images
-	if db.images[name] != nil {
+	if db.Images[name] != nil {
 		return fmt.Errorf("image for %s already exists", name)
 	}
-	db.images[name] = img
+	db.Images[name] = img
 	return nil
 }
 
 func (db *DB) Import(db2 *DB) error {
 	// import db2.Images to db.Images
-	for name, img := range db2.images {
-		db.images[name] = img
+	for name, img := range db2.Images {
+		db.Images[name] = img
 	}
 	return nil
 }
 
 func (db *DB) Set(name string, img *image.Image) error {
 	// set image in db.Images
-	db.images[name] = img
+	db.Images[name] = img
 	return nil
 }
 
@@ -101,7 +101,7 @@ func GetImagesFromFile(path string) (map[string]*image.ImagePersistance, map[str
 }
 
 func (db *DB) ReadImagePersistance() error {
-	imagePersistance, _, err := GetImagesFromFile(db.cfg.DBFile)
+	imagePersistance, _, err := GetImagesFromFile(db.Cfg.DBFile)
 	if err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func (db *DB) ReadImagePersistance() error {
 	return nil
 }
 
-func (db *DB) ImagePersistance() (map[string]*image.ImagePersistance, error) {
+func (db *DB) ToImagePersistance() (map[string]*image.ImagePersistance, error) {
 	if db.imagePersistance == nil {
 		err := db.ReadImagePersistance()
 		if err != nil {
@@ -121,11 +121,11 @@ func (db *DB) ImagePersistance() (map[string]*image.ImagePersistance, error) {
 }
 
 func (db *DB) Read() error {
-	_, images, err := GetImagesFromFile(db.cfg.DBFile)
+	_, images, err := GetImagesFromFile(db.Cfg.DBFile)
 	if err != nil {
 		return err
 	}
-	db.images = images
+	db.Images = images
 
 	return nil
 }
@@ -152,7 +152,7 @@ func createFileWithDirs(path string) (*os.File, error) {
 }
 
 func (db *DB) create() (*os.File, error) {
-	return createFileWithDirs(db.cfg.DBFile)
+	return createFileWithDirs(db.Cfg.DBFile)
 }
 
 func (db *DB) Write() error {
@@ -185,11 +185,23 @@ func (db *DB) Write() error {
 }
 
 func (db *DB) Vulncheck() error {
-	return helpers.Run("imagesumdb", "check", "-d", db.cfg.DBFile)
+	vchecker := pluginregistry.GetVulncheck()
+	for _, img := range db.GetAll() {
+		if img.IsOCI() {
+			continue
+		}
+		report, err := vchecker.Scan(img)
+		if err != nil {
+			return err
+		}
+
+		img.SetVulncheck(image.NewVulncheck(report))
+	}
+	return nil
 }
 
 func (db *DB) CompareSetImagesWithPersistance() error {
-	return db.CompareImages(db.images)
+	return db.CompareImages(db.Images)
 }
 
 func (db *DB) CompareImages(new map[string]*image.Image) error {
@@ -214,7 +226,7 @@ func (db *DB) CompareImages(new map[string]*image.Image) error {
 func (db *DB) getPersistanceMap() (map[string]*image.ImagePersistance, error) {
 	// convert db.Images to map[string]*image.ImagePersistance
 	result := make(map[string]*image.ImagePersistance)
-	for name, img := range db.images {
+	for name, img := range db.Images {
 		p, err := img.ToPersistance(name)
 		if err != nil {
 			return nil, err

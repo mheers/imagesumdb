@@ -74,10 +74,10 @@ func (v *Vulncheck) Total() int {
 }
 
 func (i *Image) Safe() bool {
-	if i.vulncheck == nil {
+	if i.I_vulncheck == nil {
 		return false
 	}
-	return i.vulncheck.Safe()
+	return i.I_vulncheck.Safe()
 }
 
 func countSeverities(vulns []types.DetectedVulnerability) map[string]int {

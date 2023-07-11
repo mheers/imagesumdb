@@ -1,11 +1,11 @@
-package vulncheck
+package main
 
 import (
 	"context"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/mheers/imagesumdb/image"
-	"github.com/mheers/imagesumdb/vulncheck/trivyhelper"
+	"github.com/mheers/imagesumdb/plugin/imagesumdb-plugin-vulncheck/trivyhelper"
 )
 
 func Scan(i *image.Image) (*types.Report, error) {

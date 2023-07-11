@@ -12,49 +12,49 @@ import (
 )
 
 type Image struct {
-	// registry of the image
-	registry string
-	// repository of the image (=name)
-	repository string
-	// tag of the image
-	tag string
-	// wheather the image is a usual image or a general oci artifact
-	oci bool
-	// cfg is the config
-	cfg       *config.Config
-	vulncheck *Vulncheck
+	// I_registry of the image
+	I_registry string
+	// I_repository of the image (=name)
+	I_repository string
+	// I_tag of the image
+	I_tag string
+	// wheather the image is a usual image or a general I_oci artifact
+	I_oci bool
+	// I_cfg is the config
+	I_cfg       *config.Config
+	I_vulncheck *Vulncheck
 }
 
 func NewImage(cfg *config.Config, registry, repository, tag string) *Image {
 	return &Image{
-		registry:   registry,
-		repository: repository,
-		tag:        tag,
-		cfg:        cfg,
-		oci:        false,
+		I_registry:   registry,
+		I_repository: repository,
+		I_tag:        tag,
+		I_cfg:        cfg,
+		I_oci:        false,
 	}
 }
 
 func NewOCIImage(cfg *config.Config, registry, repository, tag string) *Image {
 	return &Image{
-		registry:   registry,
-		repository: repository,
-		tag:        tag,
-		cfg:        cfg,
-		oci:        true,
+		I_registry:   registry,
+		I_repository: repository,
+		I_tag:        tag,
+		I_cfg:        cfg,
+		I_oci:        true,
 	}
 }
 
 func (i *Image) SetVulncheck(vulncheck *Vulncheck) {
-	i.vulncheck = vulncheck
+	i.I_vulncheck = vulncheck
 }
 
 func (i *Image) RegistryRepositoryPlain() string {
-	r := i.registry
+	r := i.I_registry
 	if r != "" {
 		r += "/"
 	}
-	return fmt.Sprintf("%s%s", r, i.repository)
+	return fmt.Sprintf("%s%s", r, i.I_repository)
 }
 
 func (i *Image) RegistryRepository() string {
@@ -66,7 +66,7 @@ func (i *Image) RegistryRepository() string {
 }
 
 func (i *Image) RegistryRepositoryTagPlain() string {
-	return fmt.Sprintf("%s:%s", i.RegistryRepositoryPlain(), i.tag)
+	return fmt.Sprintf("%s:%s", i.RegistryRepositoryPlain(), i.I_tag)
 }
 
 func (i *Image) RegistryRepositoryTag() string {
@@ -90,30 +90,30 @@ func (i *Image) String() string {
 }
 
 func (i *Image) RegistryPlain() string {
-	return i.registry
+	return i.I_registry
 }
 
 func (i *Image) Registry() string {
-	return imageRegistryRewrite(i.cfg, i.RegistryPlain())
+	return imageRegistryRewrite(i.I_cfg, i.RegistryPlain())
 }
 
 func (i *Image) Repository() string {
-	return i.repository
+	return i.I_repository
 }
 
 func (i *Image) TagPlain() string {
-	return i.tag
+	return i.I_tag
 }
 
 func (i *Image) Tag() string {
-	if i.cfg == nil {
-		return i.tag
+	if i.I_cfg == nil {
+		return i.I_tag
 	}
-	if i.cfg.ForceDigest {
+	if i.I_cfg.ForceDigest {
 		digest := i.MustDigest()
-		return fmt.Sprintf("%s@%s", i.tag, digest)
+		return fmt.Sprintf("%s@%s", i.I_tag, digest)
 	}
-	return i.tag
+	return i.I_tag
 }
 
 func (i *Image) imageCloser() (types.ImageCloser, error) {
@@ -202,7 +202,7 @@ func (i *Image) Digest() (string, error) {
 }
 
 func (i *Image) IsOCI() bool {
-	return i.oci
+	return i.I_oci
 }
 
 func imageRegistryRewrite(cfg *config.Config, src string) string {
