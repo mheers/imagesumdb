@@ -6,7 +6,7 @@ require (
 	github.com/aquasecurity/trivy v0.49.1
 	github.com/hashicorp/go-hclog v1.6.2
 	github.com/hashicorp/go-plugin v1.6.0
-	github.com/mheers/imagesumdb v0.0.0-20230524124529-a35815a8ff96
+	github.com/mheers/imagesumdb v0.0.0-20240212105504-8b011a9a8b72
 	github.com/spf13/viper v1.18.2
 )
 
@@ -363,7 +363,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
-
-// Replace these for trivy
-// github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
-replace github.com/mheers/imagesumdb => ../

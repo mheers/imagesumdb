@@ -919,6 +919,8 @@ github.com/mattn/go-sqlite3 v1.14.18/go.mod h1:2eHXhiwb8IkHr+BDWZGa96P6+rkvnG63S
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 h1:jWpvCLoY8Z/e3VKvlsiIGKtc+UG6U5vzxaoagmhXfyg=
 github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0/go.mod h1:QUyp042oQthUoa9bqDv0ER0wrtXnBruoNd7aNjkbP+k=
+github.com/mheers/imagesumdb v0.0.0-20240212105504-8b011a9a8b72 h1:JQw9InrrBqpWUstQDgroeNp5ayjxz13wEoXwdHqJMdU=
+github.com/mheers/imagesumdb v0.0.0-20240212105504-8b011a9a8b72/go.mod h1:udZhNuDub7z1kb/YQntIkNdIjlzHlv357uBTki6MWWU=
 github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032 h1:TLygBUBxikNJJfLwgm+Qwdgq1FtfV8Uh7bcxRyTzK8s=
 github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032/go.mod h1:vYT9HE7WCvL64iVeZylKmCsWKfE+JZ8105iuh2Trk8g=
 github.com/miekg/dns v1.1.53 h1:ZBkuHr5dxHtB1caEOlZTLPo7D3L3TWckgUUs/RHfDxw=
