@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"os"
 
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -41,7 +40,7 @@ func InitTrivyHelper() error {
 
 func ScanImage(ctx context.Context, image string) (*types.Report, error) {
 
-	options, err := imageFlags.ToOptions(version, []string{image}, globalFlags, os.Stdout)
+	options, err := imageFlags.ToOptions([]string{image})
 	if err != nil {
 		return nil, err
 	}

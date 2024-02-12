@@ -53,7 +53,7 @@ func main() {
 		"vulnchecker": &iPlugin.VulncheckerPlugin{Impl: vulnchecker},
 	}
 
-	logger.Debug("message from plugin", "hi", "I'm the vulnchecker plugin!")
+	logger.Debug("message from plugin", "vulnchecker plugin initialized")
 
 	plugin.Serve(&plugin.ServeConfig{
 		HandshakeConfig: handshakeConfig,
